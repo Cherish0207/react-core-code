@@ -1,11 +1,18 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-// babe-loader babel/preset-react
-let element = (
-  <div className="title" style={{ color: "red" }}>
-    <span>hello</span> world
-  </div>
-);
+function FunctionComponent(props) {
+  return (
+    <div className="title" style={{ background: "#999", color: "#fff" }}>
+      <span>{props.name}</span>
+      {props.children}
+    </div>
+  );
+}
 // console.log(JSON.stringify(element, null, 2));
-ReactDOM.render(element, document.getElementById("root"));
+ReactDOM.render(
+  <FunctionComponent name="cherish">
+    <span>world</span>
+  </FunctionComponent>,
+  document.getElementById("root")
+);

@@ -4,7 +4,6 @@
  * @param {*} container 要把虚拟dom转换成真实dom，并插入到container容器中去
  */
 function render(vdom, container) {
-  console.log(vdom, container);
   const dom = createDom(vdom);
   container.appendChild(dom);
 }
@@ -12,14 +11,23 @@ function render(vdom, container) {
 function createDom(vdom) {
   // 如果vdom是数字或者字符串的话,直接返回一个真实的文本节点
   if (typeof vdom === "string" || typeof vdom === "number") {
-    console.log(vdom);
     return document.createTextNode(vdom);
   }
   // 否则它就是一个虚拟DOM对象了,也就是 React 元素
   let { type, props } = vdom;
-  let dom = document.createElement(type);
+  let dom;
+  if (typeof type === "function") {
+    // 自定义的函数组件，FunctionComponent
+    return mountFunctionComponent(vdom);
+  } else {
+    // 原生标签
+    dom = document.createElement(type);
+  }
   updateProps(dom, props);
-  if (typeof props.children === "string" || typeof props.children === "number") {
+  if (
+    typeof props.children === "string" ||
+    typeof props.children === "number"
+  ) {
     console.log(1, dom, props.children);
     dom.textContent = props.children;
   } else if (typeof props.children === "object" && props.children.type) {
@@ -36,6 +44,16 @@ function createDom(vdom) {
   // vdom.dom = dom;
   // Uncaught TypeError: Cannot add property dom, object is not extensible
   return dom;
+}
+/**
+ * 把一个类型为自定义函数组件的虚拟DOM转换为真实DOM并返回
+ * @param {*} vdom 类型为自定义函数组件的虚拟DOM
+ */
+function mountFunctionComponent(vdom) {
+  console.log(vdom);
+  let { type: FunctionComponent, props } = vdom;
+  let renderVdom = FunctionComponent(props);
+  return createDom(renderVdom);
 }
 /**
  *
