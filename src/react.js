@@ -1,3 +1,4 @@
+import Component from "./component";
 /**
  *
  * @param {*} type
@@ -5,9 +6,9 @@
  * @param {*} children
  */
 function createElement(type, config, children) {
-  if(config) {
-    delete config.__source
-    delete config.__self
+  if (config) {
+    delete config.__source;
+    delete config.__self;
   }
   let props = {
     ...config,
@@ -23,5 +24,6 @@ function createElement(type, config, children) {
 }
 const React = {
   createElement,
+  Component,
 };
 export default React;

@@ -8,7 +8,7 @@ function render(vdom, container) {
   container.appendChild(dom);
 }
 
-function createDom(vdom) {
+export function createDom(vdom) {
   // 如果vdom是数字或者字符串的话,直接返回一个真实的文本节点
   if (typeof vdom === "string" || typeof vdom === "number") {
     return document.createTextNode(vdom);
@@ -17,6 +17,10 @@ function createDom(vdom) {
   let { type, props } = vdom;
   let dom;
   if (typeof type === "function") {
+    if (type.isReactComponent) {
+      // 类组件
+      return mountClassComponent(vdom);
+    }
     // 自定义的函数组件，FunctionComponent
     return mountFunctionComponent(vdom);
   } else {
@@ -28,13 +32,10 @@ function createDom(vdom) {
     typeof props.children === "string" ||
     typeof props.children === "number"
   ) {
-    console.log(1, dom, props.children);
     dom.textContent = props.children;
   } else if (typeof props.children === "object" && props.children.type) {
-    console.log(2, dom, props.children);
     render(props.children, dom);
   } else if (Array.isArray(props.children)) {
-    console.log(3, dom, props.children);
     // 如果儿子是一个数的话,说明儿子不止一个
     reconcileChildren(props.children, dom);
   } else {
@@ -50,10 +51,25 @@ function createDom(vdom) {
  * @param {*} vdom 类型为自定义函数组件的虚拟DOM
  */
 function mountFunctionComponent(vdom) {
-  console.log(vdom);
   let { type: FunctionComponent, props } = vdom;
   let renderVdom = FunctionComponent(props);
   return createDom(renderVdom);
+}
+/**
+ * 1.创建类组件的实例
+ * 2.调用类组件实例的render方法获得返回的虚拟DOM（React元素）
+ * 3.把返回的虚拟DOM转成真实DOM进行挂载
+ * @param {*} vdom 类行为类组件的虚拟dom
+ */
+function mountClassComponent(vdom) {
+  // 解构类的定义和属性对象
+  let { type: ClassComponent, props } = vdom;
+  let classInstance = new ClassComponent(props);
+  let renderVdom = classInstance.render();
+  let dom = createDom(renderVdom);
+  // 为以后类组件的更新，把真实DOM挂在到类的实例上
+  classInstance.dom = dom;
+  return dom;
 }
 /**
  *
@@ -79,6 +95,8 @@ function updateProps(dom, newProps) {
       for (let attr in styleObj) {
         dom.style[attr] = styleObj[attr];
       }
+    } else if (key.startsWith("on")) {
+      dom[key.toLocaleLowerCase()] = newProps[key];
     } else {
       dom[key] = newProps[key];
     }
