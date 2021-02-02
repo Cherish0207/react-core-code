@@ -1,10 +1,17 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 /**
- * 类组件和类组件的更新
- * 可以并且只能在构造函数里给this.state赋值
- * 定义状态对象
- * props 属性对象 父组件给的，只读不可改变
+ * 合成事件和批量更新
+ * 在 React里，事件的更新可能是异步的,是批量的,不是同步的
+ * 调用 setState 之后，状态并没有立刻更新，而是先缓存起来了
+ * 等事件函数处理完成后，再批量更新，一次更新并重新渲染
+ *
+ * settimeout内部的是不会批量更新的
+ * 宏任务：setTimeout
+ * 微任务：queuemicrotask  Promise.resolve()
+ * 总结：因为jsx事件处理函数是 react 控制的,
+ *      只要归 React 控制就是批量, -- 事件处理函数、生命周期函数
+ *      只要不归 react 管了。就是非批量
  */
 class Counter extends React.Component {
   constructor(props) {
@@ -14,17 +21,38 @@ class Counter extends React.Component {
       number: 0,
     };
   }
-  handleClick() {
-    this.setState({
-      number: this.state.number + 1,
-    });
-  }
+  log = () => {
+    this.setState(
+      (lastState) => ({
+        number: lastState.number + 1,
+      }),
+      () => {
+        console.log("cb1");
+      }
+    );
+    console.log(this.state.number);
+    // this.setState(
+    //   (lastState) => ({ number: lastState.number + 1 }),
+    //   () => {
+    //     console.log("callback, ", this.state.number);
+    //   }
+    // );
+  };
+  handleClick = () => {
+    this.log();
+    this.log();
+    setTimeout(() => {
+      this.log();
+      this.log();
+      this.log();
+    }, 1000);
+  };
   render() {
     return (
       <div>
         <p>{this.state.name}</p>
         <p>{this.state.number}</p>
-        <button onClick={this.handleClick.bind(this)}>number+1</button>
+        <button onClick={this.handleClick}>number+1</button>
       </div>
     );
   }

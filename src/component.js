@@ -1,16 +1,17 @@
 import { createDom } from "./react-dom";
+import Updater from "./updater";
 class Component {
   static isReactComponent = true; // 区分是类组件还是函数组件
   constructor(props) {
     this.props = props;
     this.state = {};
+    // 每个组件里有个更新器updater，负责批量更新
+    this.updater = new Updater(this);
   }
-  setState(partialState) {
-    let state = this.state;
-    this.state = {
-      ...state,
-      ...partialState,
-    };
+  setState(partialState, cb) {
+    this.updater.addState(partialState, cb);
+  }
+  forceUpdate() {
     let newVdom = this.render();
     updateClassComponent(this, newVdom);
   }
