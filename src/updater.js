@@ -5,6 +5,12 @@ export let updateQueue = {
   add(updater) {
     this.updaters.add(updater);
   },
+  batchUpdate() {
+    for (let updater of this.updaters) {
+      updater.updateComponent();
+    }
+    this.isBatchingUpdate = false;
+  },
 };
 class Updater {
   constructor(classInstance) {

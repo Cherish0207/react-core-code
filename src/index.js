@@ -1,5 +1,6 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
+import { updateQueue } from "./updater";
 /**
  * 合成事件和批量更新
  * 在 React里，事件的更新可能是异步的,是批量的,不是同步的
@@ -16,20 +17,13 @@ import ReactDOM from "./react-dom";
 class Counter extends React.Component {
   constructor(props) {
     super(props);
+    this.id = 0;
     this.state = {
       name: this.props.name,
       number: 0,
     };
   }
   log = () => {
-    this.setState(
-      (lastState) => ({
-        number: lastState.number + 1,
-      }),
-      () => {
-        console.log("cb1");
-      }
-    );
     console.log(this.state.number);
     // this.setState(
     //   (lastState) => ({ number: lastState.number + 1 }),
@@ -39,13 +33,47 @@ class Counter extends React.Component {
     // );
   };
   handleClick = () => {
-    this.log();
-    this.log();
-    setTimeout(() => {
-      this.log();
-      this.log();
-      this.log();
-    }, 1000);
+    updateQueue.isBatchingUpdate = true;
+    this.setState(
+      (lastState) => ({
+        number: lastState.number + 1,
+      }),
+      () => {
+        console.log("cb1", this.state.number);
+      }
+    );
+    console.log(this.state.number);
+    this.setState(
+      (lastState) => ({
+        number: lastState.number + 1,
+      }),
+      () => {
+        console.log("cb2", this.state.number);
+      }
+    );
+    console.log(this.state.number);
+    Promise.resolve().then(() => {
+      // console.log(this.state.number);
+      this.setState(
+        (lastState) => ({
+          number: lastState.number + 1,
+        }),
+        () => {
+          console.log("cb3", this.state.number);
+        }
+      );
+      console.log(this.state.number);
+      this.setState(
+        (lastState) => ({
+          number: lastState.number + 1,
+        }),
+        () => {
+          console.log("cb4", this.state.number);
+        }
+      );
+      console.log(this.state.number);
+    }, 0);
+    updateQueue.batchUpdate();
   };
   render() {
     return (
