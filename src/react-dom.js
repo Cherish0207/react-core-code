@@ -1,3 +1,4 @@
+import { addEvent } from "./event";
 /**
  *
  * @param {*} vdom 要渲染的虚拟dom
@@ -96,7 +97,8 @@ function updateProps(dom, newProps) {
         dom.style[attr] = styleObj[attr];
       }
     } else if (key.startsWith("on")) {
-      dom[key.toLocaleLowerCase()] = newProps[key];
+      // dom[key.toLocaleLowerCase()] = newProps[key];
+      addEvent(dom, key.toLocaleLowerCase(), newProps[key]);
     } else {
       dom[key] = newProps[key];
     }

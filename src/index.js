@@ -1,6 +1,5 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
-import { updateQueue } from "./updater";
 /**
  * 合成事件和批量更新
  * 在 React里，事件的更新可能是异步的,是批量的,不是同步的
@@ -33,7 +32,6 @@ class Counter extends React.Component {
     // );
   };
   handleClick = () => {
-    updateQueue.isBatchingUpdate = true;
     this.setState(
       (lastState) => ({
         number: lastState.number + 1,
@@ -73,14 +71,21 @@ class Counter extends React.Component {
       );
       console.log(this.state.number);
     }, 0);
-    updateQueue.batchUpdate();
+  };
+  handleNameClick = function () {
+    console.log("handleNameClick");
+  };
+  handleNumberClick = () => {
+    console.log("handleNumberClick");
   };
   render() {
     return (
       <div>
-        <p>{this.state.name}</p>
-        <p>{this.state.number}</p>
-        <button onClick={this.handleClick}>number+1</button>
+        <p onClick={this.handleNameClick.bind(this)}>{this.state.name}</p>
+        <p onClick={this.handleNumberClick.bind(this)}>{this.state.number}</p>
+        <button onClick={this.handleClick}>
+          <span>number+1</span>
+        </button>
       </div>
     );
   }
