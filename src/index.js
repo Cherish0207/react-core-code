@@ -1,5 +1,6 @@
-import React from "./react";
-import ReactDOM from "./react-dom";
+import React from "react";
+import ReactDOM from "react-dom";
+import ChildCounter from "./ChildCounter";
 
 class Counter extends React.Component {
   static defaultProps = {
@@ -26,6 +27,9 @@ class Counter extends React.Component {
     return (
       <div>
         <p>{this.state.number}</p>
+        {this.state.number === 4 ? null : (
+          <ChildCounter count={this.state.number}></ChildCounter>
+        )}
         <button onClick={this.handleClick}>
           <span>number+1</span>
         </button>
