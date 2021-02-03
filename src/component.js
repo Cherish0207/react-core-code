@@ -12,8 +12,14 @@ class Component {
     this.updater.addState(partialState, cb);
   }
   forceUpdate() {
+    if (this.componentWillUpdate) {
+      this.componentWillUpdate();
+    }
     let newVdom = this.render();
     updateClassComponent(this, newVdom);
+    if (this.componentDidUpdate) {
+      this.componentDidUpdate();
+    }
   }
   render() {
     throw new Error("此方法为抽象方法，需要子类实现");

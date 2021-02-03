@@ -12,6 +12,16 @@ export let updateQueue = {
     this.isBatchingUpdate = false;
   },
 };
+function shouldUpdate(classInstance, newState) {
+  classInstance.state = newState; //不管组件要不要更新，组件的state属性都要改变，只是页面不刷新
+  if (
+    classInstance.shouldComponentUpdate &&
+    !classInstance.shouldComponentUpdate(classInstance, classInstance.state)
+  ) {
+    return;
+  }
+  classInstance.forceUpdate();
+}
 class Updater {
   constructor(classInstance) {
     this.classInstance = classInstance; // 类组件的实例
@@ -28,6 +38,10 @@ class Updater {
     if (typeof cb === "function") {
       this.cbs.push(cb);
     }
+    this.emitUpdate();
+  }
+  // 一个组件，props/state变了都会更新
+  emitUpdate(newProps) {
     if (updateQueue.isBatchingUpdate) {
       // 批量更新模式，先缓存updater，本次setState调用结束
       updateQueue.add(this);
@@ -39,10 +53,7 @@ class Updater {
   updateComponent() {
     let { classInstance, pendingStates, cbs } = this;
     if (pendingStates.length > 0) {
-      classInstance.state = this.getState(); // 计算新状态
-      classInstance.forceUpdate();
-      cbs.forEach((cb) => cb());
-      cbs.length = 0;
+      shouldUpdate(classInstance, this.getState());
     }
   }
   getState() {

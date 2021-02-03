@@ -7,6 +7,7 @@ import { addEvent } from "./event";
 function render(vdom, container) {
   const dom = createDom(vdom);
   container.appendChild(dom);
+  dom.componentDidMount && dom.componentDidMount();
 }
 
 export function createDom(vdom) {
@@ -66,10 +67,15 @@ function mountClassComponent(vdom) {
   // 解构类的定义和属性对象
   let { type: ClassComponent, props } = vdom;
   let classInstance = new ClassComponent(props);
+  classInstance.componentWillMount && classInstance.componentWillMount();
   let renderVdom = classInstance.render();
   let dom = createDom(renderVdom);
   // 为以后类组件的更新，把真实DOM挂在到类的实例上
   classInstance.dom = dom;
+  classInstance.componentDidMount &&
+    (dom.componentDidMount = classInstance.componentDidMount.bind(
+      classInstance
+    ));
   return dom;
 }
 /**
