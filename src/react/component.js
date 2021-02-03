@@ -1,4 +1,4 @@
-import { createDom } from "./react-dom";
+import { createDom } from "../react-dom";
 import Updater from "./updater";
 class Component {
   static isReactComponent = true; // 区分是类组件还是函数组件
@@ -12,14 +12,10 @@ class Component {
     this.updater.addState(partialState, cb);
   }
   forceUpdate() {
-    if (this.componentWillUpdate) {
-      this.componentWillUpdate();
-    }
+    this.componentWillUpdate && this.componentWillUpdate();
     let newVdom = this.render();
     updateClassComponent(this, newVdom);
-    if (this.componentDidUpdate) {
-      this.componentDidUpdate();
-    }
+    this.componentDidUpdate && this.componentDidUpdate();
   }
   render() {
     throw new Error("此方法为抽象方法，需要子类实现");

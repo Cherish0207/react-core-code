@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from "./react/index";
+import ReactDOM from "./react-dom";
 import ChildCounter from "./ChildCounter";
 
 class Counter extends React.Component {

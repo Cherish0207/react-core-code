@@ -1,10 +1,11 @@
-import { addEvent } from "./event";
+import { addEvent } from "./react/event";
 /**
  *
  * @param {*} vdom 要渲染的虚拟dom
  * @param {*} container 要把虚拟dom转换成真实dom，并插入到container容器中去
  */
 function render(vdom, container) {
+  if(vdom === null) return
   const dom = createDom(vdom);
   container.appendChild(dom);
   dom.componentDidMount && dom.componentDidMount();

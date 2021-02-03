@@ -51,7 +51,7 @@ class Updater {
     }
   }
   updateComponent() {
-    let { classInstance, pendingStates, cbs } = this;
+    let { classInstance, pendingStates } = this;
     if (pendingStates.length > 0) {
       shouldUpdate(classInstance, this.getState());
     }

@@ -1,4 +1,4 @@
-import React from "react";
+import React from "./react/index";
 class ChildCounter extends React.Component {
   componentWillMount() {
     console.log("ChildCounter 1.componentWillMount 组件即将挂载");
