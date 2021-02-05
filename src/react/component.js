@@ -1,4 +1,4 @@
-import { createDom } from "../react-dom";
+import { compareTwoVdom } from "../react-dom";
 import Updater from "./updater";
 class Component {
   static isReactComponent = true; // 区分是类组件还是函数组件
@@ -13,18 +13,19 @@ class Component {
   }
   forceUpdate() {
     this.componentWillUpdate && this.componentWillUpdate();
-    let newVdom = this.render();
-    updateClassComponent(this, newVdom);
+    let oldRenderVdom = this.oldRenderVdom;
+    let newRenderVdom = this.render();
+    let oldDOM = oldRenderVdom.dom
+    compareTwoVdom({
+      parentNode: oldDOM.parentNode,
+      oldRenderVdom,
+      newRenderVdom
+    });
+    this.oldRenderVdom = newRenderVdom
     this.componentDidUpdate && this.componentDidUpdate();
   }
   render() {
     throw new Error("此方法为抽象方法，需要子类实现");
   }
-}
-function updateClassComponent(classInstance, newVdom) {
-  let oldDOM = classInstance.dom;
-  let newDOM = createDom(newVdom);
-  oldDOM.parentNode.replaceChild(newDOM, oldDOM);
-  classInstance.dom = newDOM;
 }
 export default Component;

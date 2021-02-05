@@ -1,4 +1,5 @@
 import Component from "./component";
+import { wrapToVdom } from "./utils/index";
 /**
  *
  * @param {*} type
@@ -14,7 +15,9 @@ function createElement(type, config, children) {
     ...config,
   };
   if (arguments.length > 3) {
-    children = Array.prototype.slice.call(arguments, 2);
+    children = Array.prototype.slice.call(arguments, 2).map(wrapToVdom);
+  } else {
+    children = wrapToVdom(children);
   }
   props.children = children;
   return {

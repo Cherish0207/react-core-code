@@ -399,9 +399,9 @@ module.exports = function (webpackEnv) {
                 presets: [
                   [
                     require.resolve('babel-preset-react-app'),
-                    {
-                      runtime: hasJsxRuntime ? 'automatic' : 'classic',
-                    },
+                    // {
+                    //   runtime: hasJsxRuntime ? 'automatic' : 'classic',
+                    // },
                   ],
                 ],
                 
