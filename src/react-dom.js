@@ -219,10 +219,14 @@ function updateChildren({ parentNode, oldVChildren, newVChildren }) {
   newVChildren = Array.isArray(newVChildren) ? newVChildren : [newVChildren];
   let maxLength = Math.max(oldVChildren.length, newVChildren.length);
   for (let i = 0; i < maxLength; i++) {
+    let nextDOM = oldVChildren.find(
+      (item, index) => index > i && item && item.dom
+    );
     compareTwoVdom({
       parentNode,
       oldRenderVdom: oldVChildren[i],
       newRenderVdom: newVChildren[i],
+      nextDOM: nextDOM && nextDOM.dom,
     });
   }
 }
