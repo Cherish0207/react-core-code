@@ -5,10 +5,16 @@ import { REACT_TEXT } from "./react/utils/constance";
  * @param {*} vdom 要渲染的虚拟dom
  * @param {*} container 要把虚拟dom转换成真实dom，并插入到container容器中去
  */
-function render(vdom, container) {
-  const dom = createDom(vdom);
-  container.appendChild(dom);
-  dom.componentDidMount && dom.componentDidMount();
+function render(vdom, container, nextDOM, oldDOM) {
+  let newDOM = createDom(vdom);
+  if (nextDOM) {
+    container.insertBefore(newDOM, nextDOM);
+  } else if (oldDOM) {
+    container.replaceChild(newDOM, oldDOM);
+  } else {
+    container.appendChild(newDOM);
+  }
+  newDOM.componentDidMount && newDOM.componentDidMount();
 }
 
 export function createDom(vdom) {
@@ -130,21 +136,13 @@ export function compareTwoVdom({
     currentDOM && parentNode.removeChild(currentDOM);
     componentWillUnmountFn(oldRenderVdom.classInstance);
   } else if (!oldRenderVdom && newRenderVdom) {
-    let newDOM = createDom(newRenderVdom);
-    if (nextDOM) {
-      parentNode.insertBefore(newDOM, nextDOM);
-    } else {
-      parentNode.appendChild(newDOM);
-    }
+    render(newRenderVdom, parentNode, nextDOM);
   } else if (
     oldRenderVdom &&
     newRenderVdom &&
     oldRenderVdom.type !== newRenderVdom.type
   ) {
-    let oldDOM = findDOM(oldRenderVdom);
-    let newDOM = createDom(newRenderVdom);
-    // newRenderVdom. = newDOM
-    parentNode.replaceChild(newDOM, oldDOM);
+    render(newRenderVdom, parentNode, nextDOM, findDOM(oldRenderVdom));
     componentWillUnmountFn(oldRenderVdom.classInstance);
   } else {
     // 深度的DOM-DIFF
