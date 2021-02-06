@@ -1,32 +1,38 @@
 // 更新队列
 export let updateQueue = {
   isBatchingUpdate: false, // 当前是否处于批量更新模式，默认值是false 非批量直接更新
-  updaters: new Set(),
+  updaters: [],
   add(updater) {
-    this.updaters.add(updater);
+    this.updaters.push(updater);
   },
   batchUpdate() {
-    for (let updater of this.updaters) {
-      updater.updateComponent();
-    }
     this.isBatchingUpdate = false;
+    this.updaters.forEach((updater) => updater.updateComponent());
+    this.updaters.length = 0;
   },
 };
 function shouldUpdate(classInstance, nextProps, newState) {
+  let willUpdate = true;
+  if (
+    classInstance.shouldComponentUpdate &&
+    !classInstance.shouldComponentUpdate(nextProps, newState)
+  ) {
+    willUpdate = false;
+  }
+  if (willUpdate) {
+    classInstance.componentWillUpdate && classInstance.componentWillUpdate();
+  }
   if (nextProps) {
     classInstance.props = nextProps;
   }
   classInstance.state = newState; //不管组件要不要更新，组件的state属性都要改变，只是页面不刷新
-  if (
-    classInstance.shouldComponentUpdate &&
-    !classInstance.shouldComponentUpdate(classInstance.props, classInstance.state)
-  ) {
-    return;
+  if (willUpdate) {
+    classInstance.forceUpdate();
   }
-  classInstance.forceUpdate();
 }
 class Updater {
   constructor(classInstance) {
+    this.nextProps = classInstance.props;
     this.classInstance = classInstance; // 类组件的实例
     this.pendingStates = []; // 等待生效的状态，可能是一个对象，也可能是一个函数
     this.cbs = [];
@@ -41,7 +47,7 @@ class Updater {
     if (typeof cb === "function") {
       this.cbs.push(cb);
     }
-    this.emitUpdate();
+    this.emitUpdate(this.nextProps);
   }
   // 一个组件，props/state变了都会更新
   emitUpdate(newProps) {

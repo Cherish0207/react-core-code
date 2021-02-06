@@ -12,7 +12,6 @@ class Component {
     this.updater.addState(partialState, cb);
   }
   forceUpdate() {
-    this.componentWillUpdate && this.componentWillUpdate();
     let oldRenderVdom = this.oldRenderVdom;
     let newRenderVdom = this.render();
     let oldDOM = oldRenderVdom.dom

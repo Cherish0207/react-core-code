@@ -38,17 +38,21 @@ class Counter extends React.Component {
     );
   }
   componentDidMount() {
-    console.log("Counter 4.componentDidMount 组件挂载");
+    console.log("Counter 4.componentDidMount 组件挂载", this.state.number);
   }
   shouldComponentUpdate(nextProps, nextState) {
-    console.log("Counter 5.shouldComponentUpdate 决定组件是否更新？");
+    console.log(
+      "Counter 5.shouldComponentUpdate 决定组件是否更新？",
+      nextProps,
+      nextState
+    );
     return nextState.number % 2 === 0;
   }
   componentWillUpdate() {
-    console.log("Counter 6.componentWillUpdate 即将更新");
+    console.log("Counter 6.componentWillUpdate 即将更新", this.state.number);
   }
   componentDidUpdate() {
-    console.log("Counter 7.componentDidUpdate 更新完毕 ");
+    console.log("Counter 7.componentDidUpdate 更新完毕 ", this.state.number);
   }
 }
 let CountFunction = (props) => <div className="counter-function">{props.count}</div>

@@ -1,0 +1,40 @@
+Counter 1.constructor初始化属性和状态对象
+Counter 2.componentWillMount 组件即将挂载
+Counter 3.render
+ChildCounter 1.componentWillMount 组件即将挂载
+ChildCounter 2.render
+ChildCounter 3.componentDidMount 组件挂载 0
+Counter 4.componentDidMount 组件挂载 0
+1
+1
+Counter 5.shouldComponentUpdate 决定组件是否更新？ {name: "cherish"} {number: 1}
+2
+2
+Counter 5.shouldComponentUpdate 决定组件是否更新？ {name: "cherish"} {number: 2}
+Counter 6.componentWillUpdate 即将更新 1
+Counter 3.render
+ChildCounter 4.componentWillReceiveProps 组件即将接收到新的属性 0
+ChildCounter 5.shouldComponentUpdate 决定组件是否更新？ {count: 2} null
+Counter 7.componentDidUpdate 更新完毕  2
+3
+3
+Counter 5.shouldComponentUpdate 决定组件是否更新？ {name: "cherish"} {number: 3}
+4
+4
+Counter 5.shouldComponentUpdate 决定组件是否更新？ {name: "cherish"} {number: 4}
+Counter 6.componentWillUpdate 即将更新 3
+Counter 3.render
+ChildCounter 8.componentWillUnmount 即将卸载  2
+Counter 7.componentDidUpdate 更新完毕  4
+5
+5
+Counter 5.shouldComponentUpdate 决定组件是否更新？ {name: "cherish"} {number: 5}
+6
+6
+Counter 5.shouldComponentUpdate 决定组件是否更新？ {name: "cherish"} {number: 6}
+Counter 6.componentWillUpdate 即将更新 5
+Counter 3.render
+ChildCounter 1.componentWillMount 组件即将挂载
+ChildCounter 2.render
+ChildCounter 3.componentDidMount 组件挂载 6
+Counter 7.componentDidUpdate 更新完毕  6

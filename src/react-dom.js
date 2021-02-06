@@ -132,9 +132,10 @@ export function compareTwoVdom({
 }) {
   if (!oldRenderVdom && !newRenderVdom) return;
   if (oldRenderVdom && !newRenderVdom) {
+    oldRenderVdom.classInstance.props = oldRenderVdom.props
+    componentWillUnmountFn(oldRenderVdom.classInstance);
     let currentDOM = findDOM(oldRenderVdom);
     currentDOM && parentNode.removeChild(currentDOM);
-    componentWillUnmountFn(oldRenderVdom.classInstance);
   } else if (!oldRenderVdom && newRenderVdom) {
     render(newRenderVdom, parentNode, nextDOM);
   } else if (
@@ -142,8 +143,8 @@ export function compareTwoVdom({
     newRenderVdom &&
     oldRenderVdom.type !== newRenderVdom.type
   ) {
-    render(newRenderVdom, parentNode, nextDOM, findDOM(oldRenderVdom));
     componentWillUnmountFn(oldRenderVdom.classInstance);
+    render(newRenderVdom, parentNode, nextDOM, findDOM(oldRenderVdom));
   } else {
     // 深度的DOM-DIFF
     // 更新自己的属性 深度比较儿子们
@@ -189,7 +190,7 @@ function updateClassComponent({ newRenderVdom, oldRenderVdom }) {
     oldRenderVdom.classInstance);
   newRenderVdom.oldRenderVdom = oldRenderVdom.oldRenderVdom;
   classInstance.componentWillReceiveProps &&
-    classInstance.componentWillReceiveProps();
+    classInstance.componentWillReceiveProps(newRenderVdom.props);
   classInstance.updater.emitUpdate(newRenderVdom.props);
 }
 /**
