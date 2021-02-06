@@ -177,7 +177,7 @@ function updateElement({ oldRenderVdom, newRenderVdom }) {
     if (oldRenderVdom.type.isReactComponent) {
       updateClassComponent({ newRenderVdom, oldRenderVdom });
     } else {
-      updateFunctionComponent({ newRenderVdom, oldRenderVdom });
+      updateFunctionComponent(newRenderVdom, oldRenderVdom);
     }
   }
 }
@@ -196,10 +196,17 @@ function updateClassComponent({ newRenderVdom, oldRenderVdom }) {
 }
 /**
  *
- * @param {*} newRenderVdom
- * @param {*} oldRenderVdom
+ * @param {*} newVdom
+ * @param {*} oldVdom
  */
-function updateFunctionComponent({ newRenderVdom, oldRenderVdom }) {}
+function updateFunctionComponent(newVdom, oldVdom) {
+  let parentNode = findDOM(oldVdom).parentNode;
+  let oldRenderVdom = oldVdom.oldRenderVdom;
+  let { type, props } = newVdom;
+  let newRenderVdom = type(props);
+  newVdom.oldRenderVdom = newRenderVdom;
+  compareTwoVdom({ parentNode, oldRenderVdom, newRenderVdom });
+}
 /**
  * 深度比较它的儿子们
  * @param {*} parentNode 父DOM节点

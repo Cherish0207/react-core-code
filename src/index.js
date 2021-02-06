@@ -32,7 +32,8 @@ class Counter extends React.Component {
         )}
         <button onClick={this.handleClick}>
           <span>number+1</span>
-        </button>      
+        </button>   
+        <CountFunction count={this.state.number}></CountFunction>   
       </div>
     );
   }
@@ -50,4 +51,5 @@ class Counter extends React.Component {
     console.log("Counter 7.componentDidUpdate 更新完毕 ");
   }
 }
+let CountFunction = (props) => <div className="counter-function">{props.count}</div>
 ReactDOM.render(<Counter name="cherish" />, document.getElementById("root"));
