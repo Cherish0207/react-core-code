@@ -11,16 +11,30 @@ class Component {
   setState(partialState, cb) {
     this.updater.addState(partialState, cb);
   }
+  // 一般来说组件的属性和状态变化了才会更新组件
+  // 如果属性和状态没变,我们也想更新怎么办呢?就可以调用 forceupdate
   forceUpdate() {
+    let { state, props } = this;
+    const getDerivedStateFromProps = this.constructor.getDerivedStateFromProps;
+    if (getDerivedStateFromProps) {
+      let partialState = getDerivedStateFromProps(props, state);
+      if (partialState) {
+        state = { ...state, ...partialState };
+      }
+    }
+    this.state = state;
+    this.update();
+  }
+  update() {
     let oldRenderVdom = this.oldRenderVdom;
     let newRenderVdom = this.render();
-    let oldDOM = oldRenderVdom.dom
+    let oldDOM = oldRenderVdom.dom;
     compareTwoVdom({
       parentNode: oldDOM.parentNode,
       oldRenderVdom,
-      newRenderVdom
+      newRenderVdom,
     });
-    this.oldRenderVdom = newRenderVdom
+    this.oldRenderVdom = newRenderVdom;
     this.componentDidUpdate && this.componentDidUpdate();
   }
   render() {

@@ -70,7 +70,16 @@ function mountClassComponent(vdom) {
   // 1.创建类组件的实例
   let classInstance = new type(props);
   vdom.classInstance = classInstance;
-  classInstance.componentWillMount && classInstance.componentWillMount();
+  // classInstance.componentWillMount && classInstance.componentWillMount();
+  if (type.getDerivedStateFromProps) {
+    let partialState = type.getDerivedStateFromProps(
+      classInstance.props,
+      classInstance.state
+    );
+    if (partialState) {
+      classInstance.state = { ...classInstance.state, ...partialState };
+    }
+  }
   // 2.调用类组件实例的render方法获得返回的虚拟DOM（React元素）
   // 首次mount时调用实例的render方法返回要渲染的Vdom
   let oldRenderVdom = classInstance.render();
@@ -132,7 +141,7 @@ export function compareTwoVdom({
 }) {
   if (!oldRenderVdom && !newRenderVdom) return;
   if (oldRenderVdom && !newRenderVdom) {
-    oldRenderVdom.classInstance.props = oldRenderVdom.props
+    oldRenderVdom.classInstance.props = oldRenderVdom.props;
     componentWillUnmountFn(oldRenderVdom.classInstance);
     let currentDOM = findDOM(oldRenderVdom);
     currentDOM && parentNode.removeChild(currentDOM);

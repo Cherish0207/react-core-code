@@ -25,9 +25,17 @@ function shouldUpdate(classInstance, nextProps, newState) {
   if (nextProps) {
     classInstance.props = nextProps;
   }
+  const getDerivedStateFromProps =
+    classInstance.constructor.getDerivedStateFromProps;
+  if (getDerivedStateFromProps) {
+    let partialState = getDerivedStateFromProps(nextProps, classInstance.state);
+    if (partialState) {
+      newState = { ...newState, ...partialState };
+    }
+  }
   classInstance.state = newState; //不管组件要不要更新，组件的state属性都要改变，只是页面不刷新
   if (willUpdate) {
-    classInstance.forceUpdate();
+    classInstance.update();
   }
 }
 class Updater {
