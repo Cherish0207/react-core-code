@@ -25,15 +25,7 @@ function shouldUpdate(classInstance, nextProps, newState) {
   if (nextProps) {
     classInstance.props = nextProps;
   }
-  const getDerivedStateFromProps =
-    classInstance.constructor.getDerivedStateFromProps;
-  if (getDerivedStateFromProps) {
-    let partialState = getDerivedStateFromProps(nextProps, classInstance.state);
-    if (partialState) {
-      newState = { ...newState, ...partialState };
-    }
-  }
-  classInstance.state = newState; //不管组件要不要更新，组件的state属性都要改变，只是页面不刷新
+  classInstance.state = newState;
   if (willUpdate) {
     classInstance.update();
   }
@@ -71,10 +63,10 @@ class Updater {
   updateComponent() {
     let { classInstance, pendingStates, nextProps } = this;
     if (nextProps || pendingStates.length > 0) {
-      shouldUpdate(classInstance, nextProps, this.getState());
+      shouldUpdate(classInstance, nextProps, this.getState(nextProps));
     }
   }
-  getState() {
+  getState(nextProps) {
     let { classInstance, pendingStates } = this;
     let { state } = classInstance;
     pendingStates.forEach((nextState) => {
@@ -87,6 +79,18 @@ class Updater {
       };
     });
     pendingStates.length = 0;
+    //不管组件要不要更新，组件的state属性都要改变，只是页面不刷新
+    const getDerivedStateFromProps =
+      classInstance.constructor.getDerivedStateFromProps;
+    if (getDerivedStateFromProps) {
+      let partialState = getDerivedStateFromProps(
+        nextProps,
+        classInstance.state
+      );
+      if (partialState) {
+        state = { ...state, ...partialState };
+      }
+    }
     return state;
   }
 }

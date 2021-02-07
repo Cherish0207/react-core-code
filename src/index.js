@@ -49,7 +49,6 @@ class ChildCounter extends React.Component {
     this.state = {
       number: 0,
     };
-    this.clientX = 0;
   }
   /**
    * componentWillReceiveProps
@@ -59,32 +58,21 @@ class ChildCounter extends React.Component {
    */
   static getDerivedStateFromProps(nextProps, preState) {
     console.log("getDerivedStateFromProps", nextProps, preState);
-    const { count } = nextProps;
-    // this.setstate(); 不让你这么写,避免死循环
-    if (count === 0) {
-      return { number: 10 };
-    } else if (count % 2 === 0) {
-      return { number: count * 2 };
-    } else if (count % 3 === 0) {
-      return { number: count * 3 }; // 返回的是状态对象,会跟自己的 state进行合并
-    }
-    return null;
+    return { number: nextProps.count * 2 };
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log(
+      "ChildCounter 5.shouldComponentUpdate 决定组件是否更新？",
+      nextProps,
+      nextState
+    );
+    return nextState.number < 5; 
   }
   render() {
     console.log("render", this.state.number);
-    return (
-      <div>
-        {this.state.number}
-        <p>{this.clientX}</p>
-      </div>
-    );
+    return <div>{this.state.number}</div>;
   }
   componentDidMount() {
-    window.addEventListener("mousemove", (event) => {
-      console.log(event.clientX);
-      this.clientX = event.clientX;
-      this.forceUpdate();
-    });
     console.log("componentDidMount", this.state.number);
   }
 }
