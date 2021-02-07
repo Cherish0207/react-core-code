@@ -40,4 +40,12 @@ pure-funtion 映射函数/纯函数。跟实例没有关系。也不能访问 th
 #### 新 VS 旧生命周期
 
 - willReceivedprops 容易写出 bug 出来
-- React17 引入了 fiber 之后 will 操作可能会有不停的暂停和恢复的过程,willReceivedprops就不合时宜了
+- React17 引入了 fiber 之后 will 操作可能会有不停的暂停和恢复的过程,willReceivedprops 就不合时宜了
+
+#### ref -- 应用场景
+
+高度的过渡动画会用到这个吧 写动画库的时候会大量用 ref
+
+#### getSnapshotBeforeUpdate
+
+主要是 will 的实例声明周期都废了，更新前拿不到 this,无法保存 dom 更新前的信息

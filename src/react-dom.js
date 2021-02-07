@@ -19,7 +19,7 @@ function render(vdom, container, nextDOM, oldDOM) {
 
 export function createDom(vdom) {
   // 否则它就是一个虚拟DOM对象了,也就是 React 元素
-  let { type, props } = vdom;
+  let { type, props, ref } = vdom;
   let dom;
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props.content);
@@ -43,6 +43,9 @@ export function createDom(vdom) {
   }
   // 把真实DM作为一个dom属性放在虚拟D0M。为以后更新做准备
   vdom.dom = dom;
+  if(ref) {
+    ref.current = dom
+  }
   return dom;
 }
 /**
@@ -157,7 +160,6 @@ export function compareTwoVdom({
   } else {
     // 深度的DOM-DIFF
     // 更新自己的属性 深度比较儿子们
-    // debugger
     updateElement({ oldRenderVdom, newRenderVdom });
   }
 }

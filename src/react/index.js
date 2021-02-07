@@ -7,9 +7,14 @@ import { wrapToVdom } from "./utils/index";
  * @param {*} children
  */
 function createElement(type, config, children) {
+  let ref,key
   if (config) {
     delete config.__source;
     delete config.__self;
+    ref = config.ref
+    key = config.key;
+    delete config.key
+    delete config.ref
   }
   let props = {
     ...config,
@@ -23,10 +28,16 @@ function createElement(type, config, children) {
   return {
     type,
     props,
+    ref,
+    key 
   };
+}
+function createRef() {
+  return { current: null };
 }
 const React = {
   createElement,
   Component,
+  createRef,
 };
 export default React;
