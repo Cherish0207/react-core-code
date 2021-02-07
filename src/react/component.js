@@ -29,13 +29,17 @@ class Component {
     let oldRenderVdom = this.oldRenderVdom;
     let newRenderVdom = this.render();
     let oldDOM = oldRenderVdom.dom;
+    let extraArgs =
+      this.getSnapshotBeforeUpdate && this.getSnapshotBeforeUpdate();
     compareTwoVdom({
       parentNode: oldDOM.parentNode,
       oldRenderVdom,
       newRenderVdom,
     });
     this.oldRenderVdom = newRenderVdom;
-    this.componentDidUpdate && this.componentDidUpdate();
+
+    this.componentDidUpdate &&
+      this.componentDidUpdate(this.props, this.state, extraArgs);
   }
   render() {
     throw new Error("此方法为抽象方法，需要子类实现");
