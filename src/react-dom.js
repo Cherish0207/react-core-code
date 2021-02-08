@@ -29,7 +29,7 @@ export function createDom(vdom) {
       dom = mountClassComponent(vdom);
     } else {
       // 自定义的函数组件，FunctionComponent
-      dom = mountFunctionComponent(vdom);
+      return dom = mountFunctionComponent(vdom);
     }
   } else {
     // 原生标签
@@ -43,8 +43,8 @@ export function createDom(vdom) {
   }
   // 把真实DM作为一个dom属性放在虚拟D0M。为以后更新做准备
   vdom.dom = dom;
-  if(ref) {
-    ref.current = dom
+  if (ref) {
+    ref.current = dom;
   }
   return dom;
 }
@@ -52,7 +52,7 @@ export function createDom(vdom) {
  * 把一个类型为自定义函数组件的虚拟DOM转换为真实DOM并返回
  * @param {*} vdom 类型为自定义函数组件的虚拟DOM
  */
-function mountFunctionComponent(vdom) {
+function  mountFunctionComponent(vdom) {
   let { type, props } = vdom;
   let renderVdom = type(props);
   vdom.oldRenderVdom = renderVdom;
@@ -72,6 +72,9 @@ function mountClassComponent(vdom) {
   let { type, props } = vdom;
   // 1.创建类组件的实例
   let classInstance = new type(props);
+  if (type.contextType) {
+    classInstance.context = type.contextType.Provider._value;
+  }
   vdom.classInstance = classInstance;
   // classInstance.componentWillMount && classInstance.componentWillMount();
   if (type.getDerivedStateFromProps) {
@@ -240,7 +243,7 @@ function updateChildren({ parentNode, oldVChildren, newVChildren }) {
     });
   }
 }
-function findDOM(vdom) {
+export function findDOM(vdom) {
   let { type } = vdom;
   let dom;
   if (typeof type === "function") {

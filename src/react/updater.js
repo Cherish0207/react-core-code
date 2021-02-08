@@ -26,6 +26,10 @@ function shouldUpdate(classInstance, nextProps, newState) {
     classInstance.props = nextProps;
   }
   classInstance.state = newState;
+  // if (classInstance.constructor.contextType) {
+  //   classInstance.context =
+  //     classInstance.constructor.contextType.Provider._value;
+  // }
   if (willUpdate) {
     classInstance.update();
   }

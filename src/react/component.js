@@ -1,4 +1,4 @@
-import { compareTwoVdom } from "../react-dom";
+import { compareTwoVdom, findDOM } from "../react-dom";
 import Updater from "./updater";
 class Component {
   static isReactComponent = true; // 区分是类组件还是函数组件
@@ -23,12 +23,15 @@ class Component {
       }
     }
     this.state = state;
+    // if (this.constructor.contextType) {
+    //   this.context = this.constructor.contextType.Provider._value;
+    // }
     this.update();
   }
   update() {
     let oldRenderVdom = this.oldRenderVdom;
     let newRenderVdom = this.render();
-    let oldDOM = oldRenderVdom.dom;
+    let oldDOM = findDOM(oldRenderVdom);
     let extraArgs =
       this.getSnapshotBeforeUpdate && this.getSnapshotBeforeUpdate();
     compareTwoVdom({
