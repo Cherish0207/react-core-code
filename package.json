@@ -12,10 +12,10 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "set DISABLED_NEW_JSX_TRANSFORM=true&react-scripts start",
-    "build": "set DISABLED_NEW_JSX_TRANSFORM=true&react-scripts build",
-    "test": "set DISABLED_NEW_JSX_TRANSFORM=true&react-scripts test",
-    "eject": "set DISABLED_NEW_JSX_TRANSFORM=true&react-scripts eject"
+    "start": "set DISABLED_NEW_JSX_TRANSFORM=true&react-app-rewired start",
+    "build": "set DISABLED_NEW_JSX_TRANSFORM=true&react-app-rewired build",
+    "test": "set DISABLED_NEW_JSX_TRANSFORM=true&react-app-rewired test",
+    "eject": "set DISABLED_NEW_JSX_TRANSFORM=true&react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [
@@ -33,6 +33,24 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.12.13",
+    "customize-cra": "^1.0.0",
+    "react-app-rewired": "^2.1.8"
+  },  
+  "babel": {
+    "plugins": [
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ]
+    ],
+    "presets": [
+      "react-app"
     ]
   }
 }
