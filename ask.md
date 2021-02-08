@@ -49,3 +49,7 @@ pure-funtion 映射函数/纯函数。跟实例没有关系。也不能访问 th
 #### getSnapshotBeforeUpdate
 
 主要是 will 的实例声明周期都废了，更新前拿不到 this,无法保存 dom 更新前的信息
+
+#### context
+
+定义了静态属性,但是没看到哪里有用到内部 contexttype this. context 都是定死的

@@ -1,36 +1,65 @@
-import React from "./react/index";
-import ReactDOM from "./react-dom";
-
-class Counter extends React.Component {
-  ulRef = React.createRef();
-  state = {
-    list: [],
-  };
-  // 它会在DOM更新前执行,可以用来获取更新前的一些DOM信息
-  getSnapshotBeforeUpdate() {
-    return this.ulRef.current.offsetHeight;
+import React from "react";
+import ReactDOM from "react-dom";
+let PersonContext = React.createContext();
+function getStyle(color) {
+  return { border: `5px solid ${color}`, padding: "5px" };
+}
+class Person extends React.Component {
+  state = { color: "red" };
+  changeColor = (color) => this.setState({ color });
+  render() {
+    let contextValue = { 
+      color: this.state.color,
+      changeColor: this.changeColor,
+    };
+    return (
+      <PersonContext.Provider value={contextValue}>
+        <div className="person" style={getStyle(this.state.color)}>
+          Person
+          <Head></Head>
+          <Body></Body>
+        </div>
+      </PersonContext.Provider>
+    );
   }
-  componentDidUpdate(prevProps, prevState, offsetHeight) {
-    console.log("number", this.ulRef.current.offsetHeight - offsetHeight);
-  }
-  handleClick = () => {
-    let list = this.state.list;
-    list.push(list.length);
-    this.setState({
-      list,
-    });
-  };
+}
+class Body extends React.Component {
+  static contextType = PersonContext;
   render() {
     return (
-      <div>
-        <button onClick={this.handleClick}> +1 </button>
-        <ul ref={this.ulRef}>
-          {this.state.list.map((item, key) => (
-            <li key={key}>{item}</li>
-          ))}
-        </ul>
+      <div className="Body" style={getStyle(this.context.color)}>
+        Body
+        <Hands></Hands>
       </div>
     );
   }
 }
-ReactDOM.render(<Counter />, document.getElementById("root"));
+class Hands extends React.Component {
+  static contextType = PersonContext;
+  render() {
+    return (
+      <div className="Hands" style={getStyle(this.context.color)}>
+        Hands
+        <button onClick={() => this.context.changeColor("red")}>red</button>
+        <button onClick={() => this.context.changeColor("blue")}>blue</button>
+      </div>
+    );
+  }
+}
+class Head extends React.Component {
+  static contextType = PersonContext;
+  render() {
+    return (
+      <div className="Head" style={getStyle(this.context.color)}>
+        Head<Eye></Eye>
+      </div>
+    );
+  }
+}
+class Eye extends React.Component {
+  static contextType = PersonContext;
+  render() {
+    return <div className="eye">Eye</div>;
+  }
+}
+ReactDOM.render(<Person />, document.getElementById("root"));
