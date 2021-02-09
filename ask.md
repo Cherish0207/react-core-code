@@ -58,4 +58,8 @@ pure-funtion 映射函数/纯函数。跟实例没有关系。也不能访问 th
 
 #### renderProps 和 HOC 可以互换的
 
-传送门是啥？
+传送门是啥？portal
+把组件渲染到非根结点，对话框，弹出框，loading 框
+
+hoc 感觉是有内容添逻辑 renderprop,是有逻辑添内容
+hoc 有内容然后外层包裏逻辑 render props 有逻辑,然后传入内容
