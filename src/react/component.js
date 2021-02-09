@@ -1,6 +1,6 @@
 import { compareTwoVdom, findDOM } from "../react-dom";
 import Updater from "./updater";
-class Component {
+export class Component {
   static isReactComponent = true; // 区分是类组件还是函数组件
   constructor(props) {
     this.props = props;
@@ -48,4 +48,42 @@ class Component {
     throw new Error("此方法为抽象方法，需要子类实现");
   }
 }
-export default Component;
+/**
+ * 
+ */
+export class PureComponent extends Component {
+  // PureComponent重写了shouldComponentUpdate方法,只有状态或者属性变化了オ会进行更新,否则不更新
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      !shallowEqual(this.props, nextProps) ||
+      !shallowEqual(this.state, nextState)
+    );
+  }
+}
+/**
+ * 用浅比较obj1和obj2是否相等 只要内存地址一样,就认为是相等的,不一样就不相等
+ * @param {*} obj1 
+ * @param {*} obj2 
+ */
+function shallowEqual(obj1, obj2) {
+  if (obj1 === obj2) {
+    return true;
+  }
+  if (
+    typeof obj1 !== "object" ||
+    obj1 === null ||
+    typeof obj2 !== "object" ||
+    obj2 === null
+  ) {
+    return false;
+  }
+  let keys1 = Object.keys(obj1);
+  let keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) return false;
+  for (let key of keys1) {
+    if (!obj2.hasOwnProperty(key) || obj1[key] !== obj2[key]) {
+      return false;
+    }
+  }
+  return true;
+}
