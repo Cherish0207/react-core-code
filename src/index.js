@@ -1,37 +1,44 @@
 import React from "./react/index";
 import ReactDOM from "./react-dom";
 
-let widthLoading = loadingMessage => (OldComponent) => {
-  return class NewComponent extends React.Component {
-    show = () => {
-      let div = document.createElement("div");
-      div.innerHTML = `<p id="loading" style="position: absolute;top:50%;left:50%；z-index:10;background-color:#999;">${loadingMessage}</p>`;
-      document.body.appendChild(div);
-    };
-    hide = () => {
-      document.getElementById("loading").remove();
-    };
-    render() {
-      let extraProps = {
-        show: this.show,
-        hide: this.hide,
-      };
-      return <OldComponent {...this.props} {...extraProps} />;
-    }
-  };
-}
-@widthLoading('111加载中...')
-class Hello extends React.Component {
+class Button extends React.Component {
+  state = { name: "cherish" };
+  componentWillMount() {
+    console.log("button componentWillMount");
+  }
+  componentDidMount() {
+    console.log("button componentDidMount");
+  }
   render() {
-    return (
-      <div>
-        <p>hello</p>
-        <button onClick={this.props.show}>show</button>
-        <button onClick={this.props.hide}>hide</button>
-      </div>
-    );
+    console.log("button render");
+    return <button name={this.state.name} title={this.props.title} />;
   }
 }
-// let newLoading = widthLoading('加载中...')
-// let NewHello = newLoading(Hello)
-ReactDOM.render(<Hello />, document.getElementById("root"));
+const wrap = (Button) => {
+  return class ButtonWrap extends Button {
+    state = { number: 0 };
+    add = () => this.setState({ number: this.state.number + 1 });
+    componentWillMount() {
+      super.componentWillMount();
+      console.log("ButtonWrap componentWillMount");
+    }
+    componentDidMount() {
+      super.componentDidMount();
+      console.log("ButtonWrap componentDidMount");
+    }
+    render() {
+      let superRenderElement = super.render();
+      let renderElement = React.cloneElement(
+        superRenderElement,
+        {
+          onClick: this.add,
+        },
+        this.state.number
+      );
+      console.log("ButtonWrap render");
+      return renderElement;
+    }
+  };
+};
+let ButtonWrap = wrap(Button);
+ReactDOM.render(<ButtonWrap />, document.getElementById("root"));
