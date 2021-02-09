@@ -157,7 +157,9 @@ export function compareTwoVdom({
 }) {
   if (!oldRenderVdom && !newRenderVdom) return;
   if (oldRenderVdom && !newRenderVdom) {
-    oldRenderVdom.classInstance.props = oldRenderVdom.props;
+    if (oldRenderVdom.classInstance) {
+      oldRenderVdom.classInstance.props = oldRenderVdom.props;
+    }
     componentWillUnmountFn(oldRenderVdom.classInstance);
     let currentDOM = findDOM(oldRenderVdom);
     currentDOM && parentNode.removeChild(currentDOM);
