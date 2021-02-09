@@ -1,45 +1,21 @@
 import React from "./react/index";
 import ReactDOM from "./react-dom";
-/**
- * hooks不能用在if或for循环中
- */
-
-function Counter3() {
-  let [number, setNumber] = React.useState(15);
-  return (
-    <div>
-      <p>Counter3: {number}</p>
-      <button onClick={() => setNumber(number + 1)}>+</button>
-    </div>
-  );
-}
-function Counter2() {
-  let [number, setNumber] = React.useState(10);
-  return (
-    <div>
-      <p>Counter2: {number}</p>
-      <button onClick={() => setNumber(number + 1)}>+</button>
-    </div>
-  );
-}
-function Counter1() {
-  let [number, setNumber] = React.useState(5);
-  return (
-    <div>
-      <p>Counter1: {number}</p>
-      <button onClick={() => setNumber(number + 1)}>+</button>
-    </div>
-  );
-}
+// 同步才是hook的思维方式
+// 每次渲染都是一个独立的闭包
 function App() {
   let [number, setNumber] = React.useState(0);
-
+  let addNumber = () => {
+    setTimeout(() => {
+      // 这个地方 number是当前渲染出来这个函数时候的那个 number变量,并不是最新的 number值
+      // setNumber(number + 1);
+      setNumber((number) => number + 1);
+    }, 2000);
+  };
   return (
     <div>
-      <Counter2 />
-      {number % 2 === 0 && <Counter1 />}
-      <Counter3 />
-      <button onClick={() => setNumber(number + 1)}>App+</button>
+      <p>{number}</p>
+      <button onClick={() => setNumber(number + 1)}>+ 1</button>
+      <button onClick={addNumber}>Delay + 1</button>
     </div>
   );
 }

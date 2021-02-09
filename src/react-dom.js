@@ -289,6 +289,9 @@ export function useState(initialState) {
   hookState[hookIndex] = hookState[hookIndex] || initialState;
   let currentIndex = hookIndex;
   function setState(newState) {
+    if(typeof newState === 'function') {
+      newState = newState(hookState[currentIndex]);
+    }
     hookState[currentIndex] = newState;
     scheduleUpdate(); // 状态改变后更新应用
   }
