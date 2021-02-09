@@ -55,3 +55,7 @@ pure-funtion 映射函数/纯函数。跟实例没有关系。也不能访问 th
 定义了静态属性,但是没看到哪里有用到内部 contextType this.context 都是定死的
 
 类组件和函数组件都可以用 Consumer,但是函数组件只能用 Consumer
+
+#### renderProps 和 HOC 可以互换的
+
+传送门是啥？

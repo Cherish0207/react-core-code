@@ -1,44 +1,39 @@
 import React from "./react/index";
 import ReactDOM from "./react-dom";
 
-class Button extends React.Component {
-  state = { name: "cherish" };
-  componentWillMount() {
-    console.log("button componentWillMount");
+class MouseTracker extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      x: 0,
+      y: 0,
+    };
   }
-  componentDidMount() {
-    console.log("button componentDidMount");
-  }
+  handleMouseMove = (event) => {
+    this.setState({
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
   render() {
-    console.log("button render");
-    return <button name={this.state.name} title={this.props.title} />;
+    return (
+      <div onMouseMove={this.handleMouseMove}>
+        {this.props.children(this.state)}
+      </div>
+    );
   }
 }
-const wrap = (Button) => {
-  return class ButtonWrap extends Button {
-    state = { number: 0 };
-    add = () => this.setState({ number: this.state.number + 1 });
-    componentWillMount() {
-      super.componentWillMount();
-      console.log("ButtonWrap componentWillMount");
-    }
-    componentDidMount() {
-      super.componentDidMount();
-      console.log("ButtonWrap componentDidMount");
-    }
-    render() {
-      let superRenderElement = super.render();
-      let renderElement = React.cloneElement(
-        superRenderElement,
-        {
-          onClick: this.add,
-        },
-        this.state.number
-      );
-      console.log("ButtonWrap render");
-      return renderElement;
-    }
-  };
-};
-let ButtonWrap = wrap(Button);
-ReactDOM.render(<ButtonWrap />, document.getElementById("root"));
+
+ReactDOM.render(
+  <MouseTracker>
+    {(props) => (
+      <div>
+        <h1>move鼠标</h1>
+        <p>
+          当前的鼠标位置x：{props.x},y：{props.y}
+        </p>
+      </div>
+    )}
+  </MouseTracker>,
+  document.getElementById("root")
+);
