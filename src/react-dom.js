@@ -98,7 +98,7 @@ function mountClassComponent(vdom) {
   }
   // 2.调用类组件实例的render方法获得返回的虚拟DOM（React元素）
   // 首次mount时调用实例的render方法返回要渲染的Vdom
-  let oldRenderVdom = classInstance.mount();
+  let oldRenderVdom = classInstance.render();
   classInstance.oldRenderVdom = oldRenderVdom;
   vdom.oldRenderVdom = oldRenderVdom;
   let dom = createDom(oldRenderVdom);
@@ -286,6 +286,7 @@ function componentWillUnmountFn(classInstance) {
  * @param {*} initialState 初始状态
  */
 export function useState(initialState) {
+  initialState = typeof initialState === 'function' ? initialState() : initialState
   hookState[hookIndex] = hookState[hookIndex] || initialState;
   let currentIndex = hookIndex;
   function setState(newState) {
