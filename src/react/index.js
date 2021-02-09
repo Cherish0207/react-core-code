@@ -1,5 +1,6 @@
 import { Component, PureComponent } from "./component";
 import { wrapToVdom } from "./utils/index";
+import { useState } from "../react-dom";
 /**
  *
  * @param {*} type
@@ -79,5 +80,6 @@ const React = {
   createRef,
   createContext,
   cloneElement,
+  useState,
 };
 export default React;

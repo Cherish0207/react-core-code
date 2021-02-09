@@ -1,20 +1,30 @@
 import { addEvent } from "./react/event";
 import { REACT_TEXT } from "./react/utils/constance";
+// hookState 数组里存放所有的状态
+// hookState整个应用只有一份
+let hookState = [];
+// hook索引，表示当前的hook
+let hookIndex = 0;
+let scheduleUpdate; // 调度更新
+
 /**
- *
+ * 1.把vdom虚拟DM变成真实 DOMdom
+ * 2.把虚拟D0M上的属性更新或者说同步到dom上
+ * 3.把此虚拟DOM的儿子们也都变成真实DM挂载到自己的dom上dom, appendchi1d
+ * 4.把自己挂载到容器上
  * @param {*} vdom 要渲染的虚拟dom
  * @param {*} container 要把虚拟dom转换成真实dom，并插入到container容器中去
  */
-function render(vdom, container, nextDOM, oldDOM) {
+function render(vdom, parentNode) {
+  mount(vdom, parentNode);
+  scheduleUpdate = () => {
+    hookIndex = 0; // 在状态修改后调试更新的时候,索引重置为0
+    compareTwoVdom({ parentNode, oldRenderVdom: vdom, newRenderVdom: vdom });
+  };
+}
+function mount(vdom, container) {
   let newDOM = createDom(vdom);
-  if (nextDOM) {
-    container.insertBefore(newDOM, nextDOM);
-  } else if (oldDOM) {
-    container.replaceChild(newDOM, oldDOM);
-  } else {
-    container.appendChild(newDOM);
-  }
-  newDOM.componentDidMount && newDOM.componentDidMount();
+  container.appendChild(newDOM);
 }
 
 export function createDom(vdom) {
@@ -29,7 +39,7 @@ export function createDom(vdom) {
       dom = mountClassComponent(vdom);
     } else {
       // 自定义的函数组件，FunctionComponent
-      return dom = mountFunctionComponent(vdom);
+      return (dom = mountFunctionComponent(vdom));
     }
   } else {
     // 原生标签
@@ -37,7 +47,7 @@ export function createDom(vdom) {
   }
   updateProps(dom, {}, props);
   if (typeof props.children === "object" && props.children.type) {
-    render(props.children, dom);
+    mount(props.children, dom);
   } else if (Array.isArray(props.children)) {
     reconcileChildren(props.children, dom);
   }
@@ -52,7 +62,7 @@ export function createDom(vdom) {
  * 把一个类型为自定义函数组件的虚拟DOM转换为真实DOM并返回
  * @param {*} vdom 类型为自定义函数组件的虚拟DOM
  */
-function  mountFunctionComponent(vdom) {
+function mountFunctionComponent(vdom) {
   let { type, props } = vdom;
   let renderVdom = type(props);
   vdom.oldRenderVdom = renderVdom;
@@ -88,7 +98,7 @@ function mountClassComponent(vdom) {
   }
   // 2.调用类组件实例的render方法获得返回的虚拟DOM（React元素）
   // 首次mount时调用实例的render方法返回要渲染的Vdom
-  let oldRenderVdom = classInstance.render();
+  let oldRenderVdom = classInstance.mount();
   classInstance.oldRenderVdom = oldRenderVdom;
   vdom.oldRenderVdom = oldRenderVdom;
   let dom = createDom(oldRenderVdom);
@@ -107,7 +117,7 @@ function mountClassComponent(vdom) {
 function reconcileChildren(childrenVdom, parentNode) {
   for (let i = 0; i < childrenVdom.length; i++) {
     const childVdom = childrenVdom[i];
-    render(childVdom, parentNode);
+    mount(childVdom, parentNode);
   }
 }
 /**
@@ -152,14 +162,25 @@ export function compareTwoVdom({
     let currentDOM = findDOM(oldRenderVdom);
     currentDOM && parentNode.removeChild(currentDOM);
   } else if (!oldRenderVdom && newRenderVdom) {
-    render(newRenderVdom, parentNode, nextDOM);
+    let newDOM = createDom(newRenderVdom);
+    if (nextDOM) {
+      parentNode.insertBefore(newDOM, nextDOM);
+    } else {
+      parentNode.appendChild(newDOM);
+    }
+    newDOM.componentDidMount && newDOM.componentDidMount();
+    return newRenderVdom;
   } else if (
     oldRenderVdom &&
     newRenderVdom &&
     oldRenderVdom.type !== newRenderVdom.type
   ) {
+    let oldDOM = oldRenderVdom.dom;
+    let newDOM = createDom(newRenderVdom);
+    oldDOM.parentNode.replaceChild(newDOM, oldDOM);
     componentWillUnmountFn(oldRenderVdom.classInstance);
-    render(newRenderVdom, parentNode, nextDOM, findDOM(oldRenderVdom));
+    newDOM.componentDidMount && newDOM.componentDidMount();
+    return newRenderVdom;
   } else {
     // 深度的DOM-DIFF
     // 更新自己的属性 深度比较儿子们
@@ -258,6 +279,23 @@ function componentWillUnmountFn(classInstance) {
     classInstance.componentWillUnmount();
   }
 }
+/**
+ * 让函数组件可以使用状态
+ * @param {*} initialState 初始状态
+ */
+export function useState(initialState) {
+  hookState[hookIndex] = hookState[hookIndex] || initialState;
+  let currentIndex = hookIndex;
+  function setState(newState) {
+    hookState[currentIndex] = newState;
+    scheduleUpdate(); // 状态改变后更新应用
+  }
+  return [hookState[hookIndex++], setState];
+}
+/**
+ * 其实因为在原版代码里,每一个组件都有自己的 index 和 数组
+ * 在原版代码它是把这个放到 fiber 里了
+ */
 const ReactDom = {
   render,
 };
