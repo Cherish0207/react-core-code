@@ -6,7 +6,40 @@ let hookState = [];
 // hook索引，表示当前的hook
 let hookIndex = 0;
 let scheduleUpdate; // 调度更新
-
+export function useMemo(factory, deps) {
+  if (hookState[hookIndex]) {
+    let [lastMemo, lastDeps] = hookState[hookIndex];
+    let same = deps.every((item, index) => item === lastDeps[index]);
+    if (same) {
+      hookIndex++;
+      return lastMemo;
+    } else {
+      let newMemo = factory();
+      hookState[hookIndex++] = [newMemo, deps];
+      return newMemo;
+    }
+  } else {
+    let newMemo = factory();
+    hookState[hookIndex++] = [newMemo, deps];
+    return newMemo;
+  }
+}
+export function useCallback(callback, deps) {
+  if (hookState[hookIndex]) {
+    let [lastCallback, lastDeps] = hookState[hookIndex];
+    let same = deps.every((item, index) => item === lastDeps[index]);
+    if (same) {
+      hookIndex++;
+      return lastCallback;
+    } else {
+      hookState[hookIndex++] = [callback, deps];
+      return callback;
+    }
+  } else {
+    hookState[hookIndex++] = [callback, deps];
+    return callback;
+  }
+}
 /**
  * 1.把vdom虚拟DM变成真实 DOMdom
  * 2.把虚拟D0M上的属性更新或者说同步到dom上
@@ -286,11 +319,12 @@ function componentWillUnmountFn(classInstance) {
  * @param {*} initialState 初始状态
  */
 export function useState(initialState) {
-  initialState = typeof initialState === 'function' ? initialState() : initialState
+  initialState =
+    typeof initialState === "function" ? initialState() : initialState;
   hookState[hookIndex] = hookState[hookIndex] || initialState;
   let currentIndex = hookIndex;
   function setState(newState) {
-    if(typeof newState === 'function') {
+    if (typeof newState === "function") {
       newState = newState(hookState[currentIndex]);
     }
     hookState[currentIndex] = newState;

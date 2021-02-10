@@ -1,6 +1,6 @@
 import { Component, PureComponent } from "./component";
 import { wrapToVdom } from "./utils/index";
-import { useState } from "../react-dom";
+import { useState, useMemo, useCallback } from "../react-dom";
 /**
  *
  * @param {*} type
@@ -73,6 +73,14 @@ function cloneElement(oldElement, newProps, ...newChildren) {
     props,
   };
 }
+
+export const memo = function (FunctionComponent) {
+  return class extends PureComponent {
+    render() {
+      return FunctionComponent(this.props);
+    }
+  };
+};
 const React = {
   createElement,
   Component,
@@ -81,5 +89,8 @@ const React = {
   createContext,
   cloneElement,
   useState,
+  memo,
+  useMemo,
+  useCallback,
 };
 export default React;

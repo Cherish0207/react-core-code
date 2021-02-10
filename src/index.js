@@ -1,29 +1,41 @@
 import React from "./react/index";
 import ReactDOM from "./react-dom";
-// 同步才是hook的思维方式
-// 每次渲染都是一个独立的闭包
-// usestate里面放函数,主要是可以实现惰性初始化
-function someCostMucn() {
-  console.log('经过复杂计算');
-  return 'someValue'
+/**
+ * react优化最重要的策略是减少组件的刷新 
+ * 希望组件的属性不变就不要刷新 
+ * 类组件 --- Purecomponent
+ * 函数组件 --- 
+ * useMemo 缓存对象
+ * useCallback 缓存函数 
+ */
+function Child({data, handleClick}) {
+  console.log("Child render");
+  return <button onClick={handleClick}>{data.number}</button>;
 }
+let MemoChild = React.memo(Child)
 function App() {
-  let [number, setNumber] = React.useState(someCostMucn);
-  let addNumber = () => {
-    setTimeout(() => {
-      // 这个地方 number是当前渲染出来这个函数时候的那个 number变量,并不是最新的 number值
-      // setNumber(number + 1);
-      setNumber((number) => number + 1);
-    }, 2000);
-  };
+  console.log("App render");
+  const [name, setName] = React.useState("cherish");
+  const [number, setNumber] = React.useState(0);
+  const data = React.useMemo(() => ({ number }), [number]);
+  const handleClick = React.useCallback(() => {
+    setNumber(number + 1);
+  }, [number]);
   return (
     <div>
-      <p>{number}</p>
-      <button onClick={() => setNumber(number + 1)}>+ 1</button>
-      <button onClick={addNumber}>Delay + 1</button>
+      <input
+        type="text"
+        value={name}
+        onInput={(event) => {
+          console.log('change');
+          setName(event.target.value);
+        }}
+      />
+      <MemoChild data={data} handleClick={handleClick} />
     </div>
   );
 }
+
 // 其实因为在原版代码里,每一个组件都有自己的 index和数组
 //  在原版代码它是把这个放到 fiber里了
 ReactDOM.render(<App />, document.getElementById("root"));
