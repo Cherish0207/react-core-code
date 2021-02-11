@@ -319,18 +319,26 @@ function componentWillUnmountFn(classInstance) {
  * @param {*} initialState 初始状态
  */
 export function useState(initialState) {
-  initialState =
-    typeof initialState === "function" ? initialState() : initialState;
+  return useReducer(null, initialState);
+}
+/**
+ *
+ * @param {*} reducer
+ * @param {*} initialState 初始状态
+ */
+export function useReducer(reducer, initialState) {
+  if (typeof initialState === "function") {
+    initialState = initialState();
+  }
   hookState[hookIndex] = hookState[hookIndex] || initialState;
   let currentIndex = hookIndex;
-  function setState(newState) {
-    if (typeof newState === "function") {
-      newState = newState(hookState[currentIndex]);
-    }
-    hookState[currentIndex] = newState;
+  function dispatch(action) {
+    hookState[currentIndex] = reducer
+      ? reducer(hookState[currentIndex], action)
+      : action;
     scheduleUpdate(); // 状态改变后更新应用
   }
-  return [hookState[hookIndex++], setState];
+  return [hookState[hookIndex++], dispatch];
 }
 /**
  * 其实因为在原版代码里,每一个组件都有自己的 index 和 数组

@@ -86,3 +86,9 @@ react 源码是浅比较
 - vue 是怎么实现别的组件更新自己组件不更新的? watcher
 - umihooks 号称是最好的 hooks 库
 - hooks，钩子，就是回调方法,把之前很复杂的业务逻辑,用方法浓缩了,直接调用。有个好用的 hooks 库, umihooks,很多通用的功能直接拿来用
+
+#### useState & useReduce
+
+1. usestate 用起来比较简单不需要编写 reducer,但是不能实现复杂的状态算法
+2. useReducer 用起来麻烦一点,但是功能强大
+3. useState 是 useReducer 简化版,语法糖

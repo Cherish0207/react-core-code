@@ -1,41 +1,29 @@
 import React from "./react/index";
 import ReactDOM from "./react-dom";
-/**
- * react优化最重要的策略是减少组件的刷新 
- * 希望组件的属性不变就不要刷新 
- * 类组件 --- Purecomponent
- * 函数组件 --- 
- * useMemo 缓存对象
- * useCallback 缓存函数 
- */
-function Child({data, handleClick}) {
-  console.log("Child render");
-  return <button onClick={handleClick}>{data.number}</button>;
+
+const Add = "Add";
+const Minus = "Minus";
+function reducer(state, action) {
+  switch (action.type) {
+    case Add:
+      return { number: state.number + 1 };
+    case Minus:
+      return { number: state.number - 1 };
+    default:
+      return state;
+  }
 }
-let MemoChild = React.memo(Child)
-function App() {
-  console.log("App render");
-  const [name, setName] = React.useState("cherish");
-  const [number, setNumber] = React.useState(0);
-  const data = React.useMemo(() => ({ number }), [number]);
-  const handleClick = React.useCallback(() => {
-    setNumber(number + 1);
-  }, [number]);
+
+function Counter() {
+  const [state, dispatch] = React.useReducer(reducer, {number: 0});
   return (
     <div>
-      <input
-        type="text"
-        value={name}
-        onInput={(event) => {
-          console.log('change');
-          setName(event.target.value);
-        }}
-      />
-      <MemoChild data={data} handleClick={handleClick} />
+      <p>{state.number}</p>
+      <button onClick={() => dispatch({ type: Add })}>add</button>
+      <button onClick={() => dispatch({ type: Minus })}>minus</button>
     </div>
   );
 }
-
 // 其实因为在原版代码里,每一个组件都有自己的 index和数组
 //  在原版代码它是把这个放到 fiber里了
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<Counter />, document.getElementById("root"));
