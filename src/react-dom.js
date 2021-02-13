@@ -41,6 +41,40 @@ export function useCallback(callback, deps) {
   }
 }
 /**
+ * 让函数组件可以使用状态
+ * @param {*} initialState 初始状态
+ */
+export function useState(initialState) {
+  return useReducer(null, initialState);
+}
+/**
+ *
+ * @param {*} reducer
+ * @param {*} initialState 初始状态
+ */
+export function useReducer(reducer, initialState) {
+  if (typeof initialState === "function") {
+    initialState = initialState();
+  }
+  hookState[hookIndex] = hookState[hookIndex] || initialState;
+  let currentIndex = hookIndex;
+  function dispatch(action) {
+    if (reducer) {
+      hookState[currentIndex] = reducer(hookState[currentIndex], action);
+    } else if (typeof action === "function") {
+      hookState[currentIndex] = action(hookState[currentIndex]);
+    } else {
+      hookState[currentIndex] = action;
+    }
+    scheduleUpdate(); // 状态改变后更新应用
+  }
+  return [hookState[hookIndex++], dispatch];
+}
+/**
+ * 其实因为在原版代码里,每一个组件都有自己的 index 和 数组
+ * 在原版代码它是把这个放到 fiber 里了
+ */
+/**
  * 1.把vdom虚拟DM变成真实 DOMdom
  * 2.把虚拟D0M上的属性更新或者说同步到dom上
  * 3.把此虚拟DOM的儿子们也都变成真实DM挂载到自己的dom上dom, appendchi1d
@@ -314,36 +348,6 @@ function componentWillUnmountFn(classInstance) {
     classInstance.componentWillUnmount();
   }
 }
-/**
- * 让函数组件可以使用状态
- * @param {*} initialState 初始状态
- */
-export function useState(initialState) {
-  return useReducer(null, initialState);
-}
-/**
- *
- * @param {*} reducer
- * @param {*} initialState 初始状态
- */
-export function useReducer(reducer, initialState) {
-  if (typeof initialState === "function") {
-    initialState = initialState();
-  }
-  hookState[hookIndex] = hookState[hookIndex] || initialState;
-  let currentIndex = hookIndex;
-  function dispatch(action) {
-    hookState[currentIndex] = reducer
-      ? reducer(hookState[currentIndex], action)
-      : action;
-    scheduleUpdate(); // 状态改变后更新应用
-  }
-  return [hookState[hookIndex++], dispatch];
-}
-/**
- * 其实因为在原版代码里,每一个组件都有自己的 index 和 数组
- * 在原版代码它是把这个放到 fiber 里了
- */
 const ReactDom = {
   render,
 };

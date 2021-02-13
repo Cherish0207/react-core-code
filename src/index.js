@@ -3,6 +3,7 @@ import ReactDOM from "./react-dom";
 
 const Add = "Add";
 const Minus = "Minus";
+const CounterContext = React.createContext()
 function reducer(state, action) {
   switch (action.type) {
     case Add:
@@ -15,7 +16,7 @@ function reducer(state, action) {
 }
 
 function Counter() {
-  const [state, dispatch] = React.useReducer(reducer, {number: 0});
+  let { state, dispatch } = React.useContext(CounterContext);
   return (
     <div>
       <p>{state.number}</p>
@@ -24,6 +25,14 @@ function Counter() {
     </div>
   );
 }
+function App() {
+  const [state, dispatch] = React.useReducer(reducer, { number: 0 });
+  return (
+    <CounterContext.Provider value={{ state, dispatch }}>
+      <Counter />
+    </CounterContext.Provider>
+  );
+}
 // 其实因为在原版代码里,每一个组件都有自己的 index和数组
 //  在原版代码它是把这个放到 fiber里了
-ReactDOM.render(<Counter />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));

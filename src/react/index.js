@@ -36,19 +36,23 @@ function createElement(type, config, children) {
 function createRef() {
   return { current: null };
 }
-function createContext(initialValue) {
-  Provider._value = initialValue || {};
+function useContext(context) {
+  return context._currentValue;
+}
+function createContext(initialValue = {}) {
   function Provider(props) {
-    Object.assign(Provider._value, props.value);
+    context._currentValue = context._currentValue || initialValue;
+    Object.assign(context._currentValue, props.value);
     return props.children;
   }
   function Consumer(props) {
-    return props.children(Provider._value);
+    return props.children(context._currentValue);
   }
-  return {
+  let context = {
     Provider,
     Consumer,
   };
+  return context;
 }
 function cloneElement(oldElement, newProps, ...newChildren) {
   let children = oldElement.props.children;
@@ -87,6 +91,7 @@ const React = {
   PureComponent,
   createRef,
   createContext,
+  useContext,
   cloneElement,
   useState,
   useReducer,
