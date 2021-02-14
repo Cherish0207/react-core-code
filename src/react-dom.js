@@ -6,6 +6,60 @@ let hookState = [];
 // hook索引，表示当前的hook
 let hookIndex = 0;
 let scheduleUpdate; // 调度更新
+/**
+ *
+ * @param {*} callback 回调函数页面渲染完成后
+ * @param {*} dependences 依赖数组
+ */
+export function useEffect(callback, dependences) {
+  if (hookState[hookIndex]) {
+    let [destoryFunction, lastDependences] = hookState[hookIndex];
+    let allTheSame =
+      dependences && dependences.every((dep, i) => dep === lastDependences[i]);
+    if (allTheSame) {
+      hookIndex++;
+    } else {
+      destoryFunction && destoryFunction();
+      setTimeout(() => {
+        let destoryFunction = callback();
+        hookState[hookIndex++] = [destoryFunction, dependences];
+      });
+    }
+  } else {
+    // 第一次渲染
+    setTimeout(() => {
+      let destoryFunction = callback();
+      hookState[hookIndex++] = [destoryFunction, dependences];
+    });
+  }
+}
+/**
+ *
+ * @param {*} callback 回调函数页面渲染完成后
+ * @param {*} dependences 依赖数组
+ */
+export function useLayoutEffect(callback, dependences) {
+  if (hookState[hookIndex]) {
+    let [destoryFunction, lastDependences] = hookState[hookIndex];
+    let allTheSame =
+      dependences && dependences.every((dep, i) => dep === lastDependences[i]);
+    if (allTheSame) {
+      hookIndex++;
+    } else {
+      destoryFunction && destoryFunction();
+      setTimeout(() => {
+        let destoryFunction = callback();
+        hookState[hookIndex++] = [destoryFunction, dependences];
+      });
+    }
+  } else {
+    // 第一次渲染
+    setTimeout(() => {
+      let destoryFunction = callback();
+      hookState[hookIndex++] = [destoryFunction, dependences];
+    });
+  }
+}
 export function useMemo(factory, deps) {
   if (hookState[hookIndex]) {
     let [lastMemo, lastDeps] = hookState[hookIndex];
@@ -112,11 +166,13 @@ export function createDom(vdom) {
     // 原生标签
     dom = document.createElement(type);
   }
-  updateProps(dom, {}, props);
-  if (typeof props.children === "object" && props.children.type) {
-    mount(props.children, dom);
-  } else if (Array.isArray(props.children)) {
-    reconcileChildren(props.children, dom);
+  if (props) {
+    updateProps(dom, {}, props);
+    if (typeof props.children === "object" && props.children.type) {
+      mount(props.children, dom);
+    } else if (Array.isArray(props.children)) {
+      reconcileChildren(props.children, dom);
+    }
   }
   // 把真实DM作为一个dom属性放在虚拟D0M。为以后更新做准备
   vdom.dom = dom;

@@ -1,6 +1,13 @@
 import { Component, PureComponent } from "./component";
 import { wrapToVdom } from "./utils/index";
-import { useState, useReducer, useMemo, useCallback } from "../react-dom";
+import {
+  useState,
+  useReducer,
+  useMemo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+} from "../react-dom";
 /**
  *
  * @param {*} type
@@ -92,6 +99,8 @@ const React = {
   createRef,
   createContext,
   useContext,
+  useEffect,
+  useLayoutEffect,
   cloneElement,
   useState,
   useReducer,

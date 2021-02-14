@@ -1,38 +1,30 @@
 import React from "./react/index";
 import ReactDOM from "./react-dom";
-
-const Add = "Add";
-const Minus = "Minus";
-const CounterContext = React.createContext()
-function reducer(state, action) {
-  switch (action.type) {
-    case Add:
-      return { number: state.number + 1 };
-    case Minus:
-      return { number: state.number - 1 };
-    default:
-      return state;
-  }
-}
-
+/**
+ * useEffect 里可以写副作用代码
+ * 默认每次渲染完成后都会执行
+ * 如果依赖数组是空,这个函数只会执行一次
+ * 1.依赖数组为空
+ * 2.在开启新的定时器之前把老的定时删除掉
+ */
 function Counter() {
-  let { state, dispatch } = React.useContext(CounterContext);
+  let [number, setNumber] = React.useState(0);
+  React.useEffect(() => {
+    console.log("useEffect");
+    const $timer = setInterval(() => {
+      console.log('on');
+      setNumber((number) => number + 1);
+    }, 1000);
+    // useEffect 执行完成可以返加一个销毁函数
+    return () => {
+      console.log('off');
+      clearInterval($timer);
+    };
+  });
   return (
     <div>
-      <p>{state.number}</p>
-      <button onClick={() => dispatch({ type: Add })}>add</button>
-      <button onClick={() => dispatch({ type: Minus })}>minus</button>
+      <p>{number}</p>
     </div>
   );
 }
-function App() {
-  const [state, dispatch] = React.useReducer(reducer, { number: 0 });
-  return (
-    <CounterContext.Provider value={{ state, dispatch }}>
-      <Counter />
-    </CounterContext.Provider>
-  );
-}
-// 其实因为在原版代码里,每一个组件都有自己的 index和数组
-//  在原版代码它是把这个放到 fiber里了
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<Counter />, document.getElementById("root"));
