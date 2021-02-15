@@ -93,6 +93,13 @@ export const memo = function (FunctionComponent) {
     }
   };
 };
+function forwardRef(FunctionComponent) {
+  return class extends Component {
+    render() {
+      return FunctionComponent(this.props, this.ref)
+    }
+  }
+}
 const React = {
   createElement,
   Component,
@@ -109,5 +116,6 @@ const React = {
   memo,
   useMemo,
   useCallback,
+  forwardRef
 };
 export default React;

@@ -206,11 +206,14 @@ function mountFunctionComponent(vdom) {
  * @param {*} vdom 类行为类组件的虚拟dom
  */
 function mountClassComponent(vdom) {
-  let { type, props } = vdom;
+  let { type, props, ref } = vdom;
   // 1.创建类组件的实例
   let classInstance = new type(props);
   if (type.contextType) {
     classInstance.context = type.contextType.Provider._value;
+  }
+  if (ref) {
+    classInstance.ref = ref;
   }
   vdom.classInstance = classInstance;
   // classInstance.componentWillMount && classInstance.componentWillMount();
