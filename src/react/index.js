@@ -7,6 +7,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useRef,
 } from "../react-dom";
 /**
  *
@@ -101,6 +102,7 @@ const React = {
   useContext,
   useEffect,
   useLayoutEffect,
+  useRef,
   cloneElement,
   useState,
   useReducer,

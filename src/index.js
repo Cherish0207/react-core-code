@@ -1,30 +1,24 @@
 import React from "./react/index";
 import ReactDOM from "./react-dom";
-/**
- * useEffect 里可以写副作用代码
- * 默认每次渲染完成后都会执行
- * 如果依赖数组是空,这个函数只会执行一次
- * 1.依赖数组为空
- * 2.在开启新的定时器之前把老的定时删除掉
- */
-function Counter() {
-  let [number, setNumber] = React.useState(0);
-  React.useEffect(() => {
-    console.log("useEffect");
-    const $timer = setInterval(() => {
-      console.log('on');
-      setNumber((number) => number + 1);
-    }, 1000);
-    // useEffect 执行完成可以返加一个销毁函数
-    return () => {
-      console.log('off');
-      clearInterval($timer);
-    };
+function Animation() {
+  /**
+   * useEffect 在浏览器绘制后执行,所以绘制时没有移动 然后绘制后再修改 translate 修改位置,就有动画效果了
+   * uselayoutEffect 在浏览器绘制前执行,所以绘制的时候DOM己经更新
+   */
+  React.uselayoutEffect(() => {
+    ref.current.style.WebkitTransform = "translate(500px)";
+    ref.current.style.transition = "all 1000ms";
   });
+  const ref = React.useRef();
+  const style = {
+    width: "100px",
+    height: "100px",
+    border: "1px solid #000",
+  };
   return (
-    <div>
-      <p>{number}</p>
+    <div ref={ref} style={style}>
+      content
     </div>
   );
 }
-ReactDOM.render(<Counter />, document.getElementById("root"));
+ReactDOM.render(<Animation />, document.getElementById("root"));

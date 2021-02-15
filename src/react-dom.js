@@ -47,18 +47,22 @@ export function useLayoutEffect(callback, dependences) {
       hookIndex++;
     } else {
       destoryFunction && destoryFunction();
-      setTimeout(() => {
+      queueMicrotask(() => {
         let destoryFunction = callback();
         hookState[hookIndex++] = [destoryFunction, dependences];
       });
     }
   } else {
     // 第一次渲染
-    setTimeout(() => {
+    queueMicrotask(() => {
       let destoryFunction = callback();
       hookState[hookIndex++] = [destoryFunction, dependences];
     });
   }
+}
+export function useRef(initialState) {
+  hookState[hookIndex] = hookState[hookIndex] || { current: initialState };
+  return hookState[hookIndex++];
 }
 export function useMemo(factory, deps) {
   if (hookState[hookIndex]) {
