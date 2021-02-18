@@ -1,3 +1,15 @@
+#### 要不要引入 react
+
+- react17 以前，React.creatEelement('div')
+- react17 以后，有新的 Runtime transformer，jsx 编译 ，不需要引入 react 了
+- require('react/jsx-runtime')('div')
+
+```js
+ // automatic: 新的转换规则
+ // classic: 旧的转换规则
+runtime: hasJsxRuntime ? 'automatic' : 'classic',
+```
+
 #### react 配置项隐藏起来怎么做的?react 项目配置文件在哪看?
 
 有两种方式
@@ -94,10 +106,12 @@ react 源码是浅比较
 3. useState 是 useReducer 简化版,语法糖
 
 #### useEffect
+
 hooks,里面可以传一个函数,这个函数会在组件渲染之后执行
 副作用说的是啥?
 修改全局变量,开启定时器,调数据库调接口
 
 #### 副作用 & 纯函数
+
 1. 相同的输入会产生相同的输出
 2. 不能修改本函数作用域之外的变量
