@@ -27,6 +27,8 @@ import ProfilePageClass from "./ProfilePageClass";
     这也是类组件 this 存在的意义：能在渲染方法以及生命周期方法中得到最新的实例。
     所以如果在请求已经发出的情况下我们的组件进行了重新渲染， this.props将会改变。 showMessage方法从一个"过于新"的 props中得到了 user。
     从 this 中读取数据的这种行为，调用一个回调函数读取 this.props 的 timeout 会让 showMessage 回调并没有与任何一个特定的渲染"绑定"在一起，所以它"失去"了正确的 props。
+  
+    这个问题可以在任何一个将数据放入类似 this 这样的可变对象中的UI库中重现它（不仅只存在 React 中）
  */
 class App extends React.Component {
   state = {
