@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 
 import ProfilePageFunction from "./ProfilePageFunction";
 import ProfilePageClass from "./ProfilePageClass";
+import MessageThread from "./MessageThread";
 
 /**
  * https://juejin.cn/post/6844904049146331150
@@ -58,6 +59,9 @@ class App extends React.Component {
           <b> (class)</b>
         </p>
         <p>Can you spot the difference in the behavior?</p>
+        <hr />
+        <p>使用Hooks，同样的原则也适用于state。</p>
+        <MessageThread />
       </>
     );
   }
