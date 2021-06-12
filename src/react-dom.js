@@ -117,14 +117,20 @@ export function useReducer(reducer, initialState) {
   hookState[hookIndex] = hookState[hookIndex] || initialState;
   let currentIndex = hookIndex;
   function dispatch(action) {
+    let lastState = hookState[currentIndex],
+      nextState;
     if (reducer) {
-      hookState[currentIndex] = reducer(hookState[currentIndex], action);
+      nextState = reducer(lastState, action);
     } else if (typeof action === "function") {
-      hookState[currentIndex] = action(hookState[currentIndex]);
+      nextState = action(lastState);
     } else {
-      hookState[currentIndex] = action;
+      nextState = action;
     }
-    scheduleUpdate(); // 状态改变后更新应用
+    // 浅比较
+    if (lastState !== nextState) {
+      hookState[currentIndex] = nextState;
+      scheduleUpdate(); // 状态改变后更新应用
+    }
   }
   return [hookState[hookIndex++], dispatch];
 }
@@ -234,9 +240,8 @@ function mountClassComponent(vdom) {
   let dom = createDom(oldRenderVdom);
   // 为以后类组件的更新，把真实DOM挂在到类的实例上
   classInstance.componentDidMount &&
-    (dom.componentDidMount = classInstance.componentDidMount.bind(
-      classInstance
-    ));
+    (dom.componentDidMount =
+      classInstance.componentDidMount.bind(classInstance));
   return dom;
 }
 /**
@@ -299,6 +304,12 @@ export function compareTwoVdom({
       parentNode.insertBefore(newDOM, nextDOM);
     } else {
       parentNode.appendChild(newDOM);
+    }
+    // 组件销毁的时候执行上次回调 函数执行的返回值
+    // effect的回调中要创建定时器,等组件销毁的时候要清掉定时器
+    if (hookState[hookIndex]) {
+      let [destoryFunction] = hookState[hookIndex];
+      destoryFunction && destoryFunction();
     }
     newDOM.componentDidMount && newDOM.componentDidMount();
     return newRenderVdom;
