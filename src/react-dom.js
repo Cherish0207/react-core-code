@@ -261,21 +261,32 @@ function reconcileChildren(childrenVdom, parentNode) {
  * @param {*} oldProps 旧属性对象
  * @param {*} newProps 新属性对象
  */
-function updateProps(dom, oldProps, newProps) {
-  for (let key in newProps) {
+export function updateProps(dom, oldProps, newProps) {
+  for (let key in oldProps) {
     if (key === "children") continue; // 后面单独处理
-    if (key === "style") {
-      let styleObj = newProps.style;
-      for (let attr in styleObj) {
-        dom.style[attr] = styleObj[attr];
-      }
-    } else if (key.startsWith("on")) {
-      // dom[key.toLocaleLowerCase()] = newProps[key];
-      addEvent(dom, key.toLocaleLowerCase(), newProps[key]);
+    if (newProps.hasOwnProperty(key)) {
+      setProp(dom, key, newProps[key]);
     } else {
-      dom[key] = newProps[key];
+      dom.removeAttribute(key);
     }
   }
+  for (let key in newProps) {
+    if (key === "children") continue;
+    setProp(dom, key, newProps[key]);
+  }
+}
+function setProp(dom, key, value) {
+  if (key === "style") {
+    for (let attr in value) {
+      dom.style[attr] = value[attr];
+    }
+  } else if (key.startsWith("on")) {
+    // dom[key.toLocaleLowerCase()] = value;
+    addEvent(dom, key.toLocaleLowerCase(), value);
+  } else {
+    dom.setAttribute(key, value);
+  }
+  return dom;
 }
 /**
  * 对当前组件进行DOM-DIFF
