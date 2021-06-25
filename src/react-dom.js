@@ -1,5 +1,6 @@
 import { addEvent } from "./react/event";
-import { REACT_TEXT } from "./react/utils/constance";
+import { REACT_TEXT, TAG_ROOT } from "./react/utils/constance";
+import { scheduleRoot } from "./fiber/schedule.js";
 // hookState 数组里存放所有的状态
 // hookState整个应用只有一份
 let hookState = [];
@@ -147,15 +148,27 @@ export function useReducer(reducer, initialState) {
  * @param {*} container 要把虚拟dom转换成真实dom，并插入到container容器中去
  */
 function render(vdom, parentNode) {
-  mount(vdom, parentNode);
-  scheduleUpdate = () => {
-    hookIndex = 0; // 在状态修改后调试更新的时候,索引重置为0
-    compareTwoVdom({ parentNode, oldRenderVdom: vdom, newRenderVdom: vdom });
+  let rootFiber = {
+    tag: TAG_ROOT, // tag标识此元素的类型
+    stateNode: parentNode, // 一般如果这个元素是一个原生节点,stateNode指向真实DOM元素
+    props: { children: [vdom] },
   };
+  scheduleRoot(rootFiber);
 }
 function mount(vdom, container) {
   let newDOM = createDom(vdom);
   container.appendChild(newDOM);
+}
+export function createDOM(currentFiber) {
+  if (currentFiber.type === REACT_TEXT) {
+    return document.createTextNode(currentFiber.props.content);
+  }
+  const stateNode = document.createElement(currentFiber.type);
+  updateDOM(stateNode, {}, currentFiber.props);
+  return stateNode;
+}
+function updateDOM(stateNode, oldProps, newProps) {
+  updateProps(stateNode, oldProps, newProps);
 }
 
 export function createDom(vdom) {
